@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Daily bonus</title>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{background:#E9E9EE;font-family:'Onest',system-ui,sans-serif;color:#161823;-webkit-tap-highlight-color:transparent;user-select:none}
+button{font-family:inherit;border:none;cursor:pointer;color:inherit}
+#app{position:relative;max-width:440px;margin:0 auto;min-height:100dvh;background:radial-gradient(90% 45% at 105% -5%,rgba(37,244,238,.18),transparent 70%),radial-gradient(80% 40% at -10% -5%,rgba(254,44,85,.12),transparent 70%),#fff;overflow:hidden;display:flex;flex-direction:column;gap:20px;padding:18px 18px 26px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.muted{font-size:14px;font-weight:600;color:rgba(22,24,35,.55)}
+.pill{display:flex;align-items:center;gap:8px;padding:7px 14px 7px 8px;background:#161823;color:#fff;border-radius:999px;font-size:16px;font-weight:800;box-shadow:-2px 0 0 #25F4EE,2px 0 0 #FE2C55;font-variant-numeric:tabular-nums}
+.coin{border-radius:50%;background:url('https://i.ibb.co/ksvpvGpv/images.png') center/cover no-repeat;box-shadow:0 2px 6px rgba(0,0,0,.15);position:relative;flex:none}
+h1{font-size:32px;line-height:1.05;font-weight:900;letter-spacing:-.02em}
+.sub{font-size:15px;line-height:1.4;color:rgba(22,24,35,.6);margin-top:6px}
+.streak{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-radius:18px;background:#F5F5F7}
+.streak-row{display:flex;justify-content:space-between;font-size:14px;font-weight:700}
+.track{height:8px;border-radius:99px;background:#E3E3E8;overflow:hidden}
+.fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#25F4EE,#FE2C55);transition:width .5s}
+.spacer{flex:1}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.day{background:#fff;border-radius:18px;padding:22px 6px 18px;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:0 0 0 1.5px #161823,-3px 3px 0 1.5px #25F4EE,3px 3px 0 1.5px #FE2C55;transition:transform .1s}
+.day:active{transform:scale(.96)}
+.day .lbl{font-size:14px;font-weight:600;color:rgba(22,24,35,.6)}
+.day .amt{font-size:20px;font-weight:800}
+.day.done{background:#F5F5F7;box-shadow:none;cursor:default}
+.day.done .amt,.day.done .lbl{color:rgba(22,24,35,.4)}
+.check{width:50px;height:50px;border-radius:50%;background:#161823;display:flex;align-items:center;justify-content:center;box-shadow:-2px 0 0 #25F4EE,2px 0 0 #FE2C55}
+.chest-card{grid-column:span 3;border-radius:22px;padding:22px 20px;display:flex;align-items:center;gap:18px;background:#161823;color:#fff;text-align:left;box-shadow:-3px 0 0 #25F4EE,3px 0 0 #FE2C55;transition:opacity .3s}
+.chest-card .d7{font-size:13px;font-weight:600;color:#25F4EE}
+.chest-card .t{font-size:22px;font-weight:800;line-height:1.15;margin:4px 0}
+.chest-card .s{font-size:14px;color:rgba(255,255,255,.7)}
+.mini{width:108px;height:99px;flex:none;position:relative}
+.chest{position:absolute;left:0;top:0;width:240px;height:220px;transform:scale(.45);transform-origin:0 0}
+.glow{position:absolute;left:20px;right:20px;top:80px;height:30px;border-radius:12px;background:#FFE7A0;box-shadow:0 0 40px 20px rgba(255,214,90,.9)}
+.part{position:absolute;left:0;right:0;border:9px solid #FFD27A;overflow:hidden}
+.part i{position:absolute;top:0;bottom:0;width:24px;background:#FFD27A}
+.part i:first-child{left:44px}.part i:last-child{right:44px}
+.body{top:86px;height:130px;border-radius:12px 12px 22px 22px;background:linear-gradient(180deg,#FE2C55,#D91E45)}
+.lid{position:absolute;left:0;right:0;top:0;height:130px;z-index:2;transform-origin:10% 75%}
+.lid .part{top:0;height:96px;border-radius:70px 70px 12px 12px;background:linear-gradient(180deg,#FF7A93,#FE2C55)}
+.lock{position:absolute;left:90px;top:62px;width:60px;height:60px;border-radius:50%;background:#FFF6E0;border:6px solid #F2B94B}
+.cta{height:58px;border-radius:16px;background:#FE2C55;color:#fff;font-size:17px;font-weight:800;box-shadow:0 8px 24px rgba(254,44,85,.3)}
+.cta:active{transform:scale(.98)}
+.overlay{position:absolute;inset:0;z-index:40;display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px;text-align:center;background:radial-gradient(70% 40% at 50% 42%,rgba(255,204,80,.45),transparent 70%),rgba(255,255,255,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.overlay .kicker{font-size:15px;font-weight:700;color:#FE2C55;letter-spacing:.04em;text-transform:uppercase}
+.overlay h2{font-size:38px;line-height:1.05;font-weight:900;letter-spacing:-.02em;margin:8px 0}
+.overlay .big{font-size:64px;line-height:1;font-weight:900;letter-spacing:-.03em;text-shadow:-3px 0 0 #25F4EE,3px 0 0 #FE2C55;font-variant-numeric:tabular-nums}
+.dark{width:100%;max-width:360px;height:58px;margin-top:10px;border-radius:16px;background:#161823;color:#fff;font-size:17px;font-weight:800;box-shadow:-3px 0 0 #25F4EE,3px 0 0 #FE2C55}
+#fx{position:absolute;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="top">
+    <div class="muted">Rewards</div>
+    <div class="pill" id="pill"><div class="coin" style="width:22px;height:22px"></div><span id="bal">0</span></div>
+  </div>
+  <div>
+    <h1 id="title">Daily bonus</h1>
+    <div class="sub">Check in every day — a treasure chest is waiting for you on day 7</div>
+  </div>
+  <div class="streak">
+    <div class="streak-row"><span>Check-in streak</span><span id="streakTxt" style="color:#FE2C55">0 / 7 days</span></div>
+    <div class="track"><div class="fill" id="fill" style="width:0"></div></div>
+  </div>
+  <div class="spacer"></div>
+  <div class="grid" id="grid">
+    <button class="chest-card" id="chestCard">
+      <div class="mini"><div class="chest">
+        <div class="glow"></div>
+        <div class="part body"><i></i><i></i></div>
+        <div class="lid" id="lid"><div class="part"><i></i><i></i></div><div class="lock"></div></div>
+      </div></div>
+      <div><div class="d7">Day 7</div><div class="t">Treasure chest</div><div class="s" id="chestSub"></div></div>
+    </button>
+  </div>
+  <button class="cta" id="cta"></button>
+
+  <div class="overlay" id="overlay">
+    <div><div class="kicker">Day 7 · Treasure chest</div><h2>Congratulations!</h2><div class="sub">You checked in 7 days in a row</div></div>
+    <div class="coin" id="prize" style="width:120px;height:120px;box-shadow:inset 0 -6px 0 rgba(176,104,0,.45),0 10px 40px rgba(242,162,0,.5)"></div>
+    <div class="big" id="won">+0</div>
+    <button class="dark" id="claim">Claim</button>
+  </div>
+
+  <div id="fx"></div>
+</div>
+
+<script>
+const AMTS = [100, 150, 200, 300, 400, 500];
+const START = 1240, CHEST_MIN = 20000, CHEST_MAX = 30000, KEY = 'prank-bonus-v1';
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString('en-US');
+const app = $('app'), fx = $('fx');
+
+let S = load();
+let shown = S.balance, won = 0, wonShown = 0, opened = false;
+
+function load() {
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s) return s; } catch (e) {}
+  return { balance: START, claimed: [false, false, false, false, false, false], chestDone: false };
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+const allClaimed = () => S.claimed.every(Boolean);
+
+// days
+const dayEls = AMTS.map((v, i) => {
+  const b = document.createElement('button');
+  b.className = 'day';
+  b.onclick = () => claimDay(i, 0);
+  $('grid').insertBefore(b, $('chestCard'));
+  return b;
+});
+
+function render() {
+  dayEls.forEach((b, i) => {
+    const done = S.claimed[i];
+    b.classList.toggle('done', done);
+    b.innerHTML = `<span class="lbl">Day ${i + 1}</span>` +
+      (done ? `<div class="check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12.5 10 17 19 7"/></svg></div>`
+            : `<div class="coin" style="width:50px;height:50px"></div>`) +
+      `<span class="amt">+${AMTS[i]}</span>`;
+  });
+  const n = S.claimed.filter(Boolean).length + (S.chestDone ? 1 : 0);
+  $('streakTxt').textContent = `${n} / 7 days`;
+  $('fill').style.width = (n / 7 * 100) + '%';
+  const all = allClaimed();
+  $('chestCard').style.opacity = all ? 1 : .55;
+  $('chestSub').textContent = opened || S.chestDone ? 'Opened' : all ? 'Ready! Tap to open' : `Up to ${fmt(CHEST_MAX)} inside · claim days 1–6`;
+  $('lid').style.opacity = S.chestDone ? 0 : 1;
+  const sum = AMTS.reduce((a, v, i) => a + (S.claimed[i] ? 0 : v), 0);
+  const cta = $('cta');
+  cta.style.display = S.chestDone ? 'none' : '';
+  cta.textContent = sum > 0 ? `Claim all · +${fmt(sum)}` : 'Open the chest';
+  cta.onclick = sum > 0 ? claimAll : openChest;
+}
+
+// count-up loop
+(function tick() {
+  const chase = (c, t) => { const d = t - c; return Math.abs(d) < 4 ? t : c + (Math.round(d * .08) || Math.sign(d)); };
+  if (shown !== S.balance) { shown = chase(shown, S.balance); }
+  if (wonShown !== won) { wonShown = chase(wonShown, won); }
+  $('bal').textContent = fmt(shown);
+  $('won').textContent = '+' + fmt(wonShown);
+  requestAnimationFrame(tick);
+})();
+
+// helpers
+function pos(el) {
+  const r = el.getBoundingClientRect(), R = app.getBoundingClientRect();
+  return { x: r.left - R.left + r.width / 2, y: r.top - R.top + r.height / 2 };
+}
+function coinEl(size) {
+  const el = document.createElement('div');
+  el.className = 'coin';
+  el.style.cssText = `position:absolute;left:0;top:0;width:${size}px;height:${size}px`;
+  fx.appendChild(el);
+  return el;
+}
+function fly(from, to, delay, dur = 850) {
+  const s = 24, h = s / 2, el = coinEl(s);
+  const sx = from.x + (Math.random() - .5) * 40, sy = from.y + (Math.random() - .5) * 30;
+  const mx = (sx + to.x) / 2 + (Math.random() - .5) * 140, my = Math.min(sy, to.y) - 40 - Math.random() * 90;
+  const t = (x, y, sc) => `translate(${x - h}px,${y - h}px) scale(${sc})`;
+  el.animate([
+    { transform: t(sx, sy, .3), opacity: 0 },
+    { transform: t(sx, sy - 10, 1.1), opacity: 1, offset: .12 },
+    { transform: t(mx, my, 1), opacity: 1, offset: .55 },
+    { transform: t(to.x, to.y, .7), opacity: 1, offset: .96 },
+    { transform: t(to.x, to.y, .5), opacity: 0 }
+  ], { duration: dur, delay, easing: 'cubic-bezier(.45,0,.55,1)', fill: 'both' }).onfinish = () => el.remove();
+}
+function burst(from, n) {
+  for (let i = 0; i < n; i++) {
+    const s = 18 + Math.random() * 14, h = s / 2, el = coinEl(s);
+    const a = -Math.PI / 2 + (Math.random() - .5) * 2.6, v = 120 + Math.random() * 200;
+    const px = from.x + Math.cos(a) * v, py = from.y + Math.sin(a) * v;
+    const t = (x, y, sc, r) => `translate(${x - h}px,${y - h}px) scale(${sc}) rotateY(${r}deg)`;
+    el.animate([
+      { transform: t(from.x, from.y, .2, 0), opacity: 1 },
+      { transform: t(px, py, 1, 180), opacity: 1, offset: .45 },
+      { transform: t(px + (px - from.x) * .3, py + 260, .9, 360), opacity: 0 }
+    ], { duration: 1300 + Math.random() * 500, delay: Math.random() * 120, easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'both' }).onfinish = () => el.remove();
+  }
+}
+function confetti() {
+  const W = fx.clientWidth, H = fx.clientHeight, cols = ['#25F4EE', '#FE2C55', '#FFCB3D', '#161823', '#FF8AA0'];
+  const wave = (n, delay) => {
+    for (let i = 0; i < n; i++) {
+      const el = document.createElement('div'), w = 6 + Math.random() * 6, h = w * (1.4 + Math.random());
+      el.style.cssText = `position:absolute;left:0;top:0;width:${w}px;height:${h}px;border-radius:${Math.random() < .3 ? '50%' : '2px'};background:${cols[i % cols.length]}`;
+      fx.appendChild(el);
+      const L = i % 2 === 0, x0 = L ? -10 : W + 10, y0 = H * (.35 + Math.random() * .25);
+      const px = W * (.1 + Math.random() * .8), py = H * Math.random() * .25;
+      const x2 = px + (Math.random() - .5) * 120, r = (Math.random() - .5) * 1440;
+      el.animate([
+        { transform: `translate(${x0}px,${y0}px) rotate(0)` },
+        { transform: `translate(${px}px,${py}px) rotate(${r / 3}deg)`, offset: .3 },
+        { transform: `translate(${x2}px,${H + 30}px) rotate(${r}deg)` }
+      ], { duration: 2600 + Math.random() * 1800, delay: delay + Math.random() * 200, easing: 'cubic-bezier(.15,.6,.4,1)', fill: 'both' }).onfinish = () => el.remove();
+    }
+  };
+  wave(90, 0);
+  clearInterval(confTimer);
+  confTimer = setInterval(() => wave(35, 0), 700);
+}
+let confTimer = null;
+function pulse(delay) {
+  setTimeout(() => $('pill').animate([{ transform: 'scale(1)' }, { transform: 'scale(1.14)' }, { transform: 'scale(1)' }], { duration: 260 }), delay);
+}
+
+// actions
+function claimDay(i, delay) {
+  if (S.claimed[i]) return;
+  const from = pos(dayEls[i]), to = pos($('pill'));
+  S.claimed[i] = true;
+  setTimeout(render, delay);
+  for (let k = 0; k < 6; k++) fly(from, to, delay + k * 45);
+  setTimeout(() => { S.balance += AMTS[i]; save(); }, delay + 820);
+  for (let k = 0; k < 3; k++) pulse(delay + 820 + k * 60);
+}
+function claimAll() {
+  let d = 0;
+  S.claimed.forEach((c, i) => { if (!c) { claimDay(i, d); d += 140; } });
+}
+function openChest() {
+  if (!allClaimed() || S.chestDone || opened) return;
+  opened = true;
+  won = Math.round((CHEST_MIN + Math.random() * (CHEST_MAX - CHEST_MIN)) / 10) * 10;
+  wonShown = 0;
+  render();
+  $('lid').animate([
+    { transform: 'translateY(0) rotate(0)' },
+    { transform: 'translateY(-150px) rotate(-28deg)', offset: .55 },
+    { transform: 'translateY(-120px) rotate(-20deg)' }
+  ], { duration: 600, easing: 'cubic-bezier(.2,1.4,.4,1)', fill: 'forwards' });
+  const card = $('chestCard');
+  card.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.04,.96)' }, { transform: 'scale(1)' }], { duration: 400 });
+  const p = pos(card); burst({ x: p.x - 100, y: p.y }, 30);
+  navigator.vibrate && navigator.vibrate([60, 40, 120]);
+  setTimeout(() => {
+    $('overlay').style.display = 'flex';
+    setTimeout(() => { burst(pos($('prize')), 50); confetti(); }, 40);
+  }, 550);
+}
+$('chestCard').onclick = openChest;
+$('claim').onclick = () => reset();
+function reset() {
+  clearInterval(confTimer);
+  $('lid').getAnimations().forEach(a => a.cancel());
+  fx.innerHTML = '';
+  S = { balance: START, claimed: [false, false, false, false, false, false], chestDone: false };
+  shown = START; won = 0; wonShown = 0; opened = false;
+  $('overlay').style.display = 'none';
+  save(); render();
+}
+$('title').onclick = reset; // hidden restart
+
+render();
+</script>
+</body>
+</html>
